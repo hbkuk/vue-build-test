@@ -9,32 +9,43 @@ steps:
     entrypoint: 'npm'
     args: ['run', 'build']
 
-  # 3. 빌드 결과를 첫번째 VM으로 복사
+  # 3. 첫 번째 VM 배포 + 로그
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        # dist 폴더 전체 복사
+        echo "📦 복사: 첫 번째 VM으로 dist/ 전송 시작"
         gcloud compute scp --recurse dist/ instance-group-2-06h1:/tmp/dist --zone=asia-northeast3-a
 
-        # VM 내에서 nginx 경로로 복사
+        echo "🚀 복사 완료. 첫 번째 VM에서 /tmp/dist 내용 확인:"
+        gcloud compute ssh instance-group-2-06h1 --zone=asia-northeast3-a --command="ls -al /tmp/dist"
+
+        echo "🛠️ nginx 디렉토리 덮어쓰기 진행 중..."
         gcloud compute ssh instance-group-2-06h1 --zone=asia-northeast3-a --command="
           sudo rm -rf /var/www/html/* &&
-          sudo cp -r /tmp/dist/* /var/www/html/"
-    # 4. 빌드 결과를 두번째 VM으로 복사
+          sudo cp -r /tmp/dist/* /var/www/html/ &&
+          echo '✅ 첫 번째 VM에 복사 완료: /var/www/html 상태:' &&
+          ls -al /var/www/html/"
+
+  # 4. 두 번째 VM 배포 + 로그
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        # dist 폴더 전체 복사
+        echo "📦 복사: 두 번째 VM으로 dist/ 전송 시작"
         gcloud compute scp --recurse dist/ instance-group-2-9mdh:/tmp/dist --zone=asia-northeast3-a
 
-        # VM 내에서 nginx 경로로 복사
+        echo "🚀 복사 완료. 두 번째 VM에서 /tmp/dist 내용 확인:"
+        gcloud compute ssh instance-group-2-9mdh --zone=asia-northeast3-a --command="ls -al /tmp/dist"
+
+        echo "🛠️ nginx 디렉토리 덮어쓰기 진행 중..."
         gcloud compute ssh instance-group-2-9mdh --zone=asia-northeast3-a --command="
           sudo rm -rf /var/www/html/* &&
-          sudo cp -r /tmp/dist/* /var/www/html/"
+          sudo cp -r /tmp/dist/* /var/www/html/ &&
+          echo '✅ 두 번째 VM에 복사 완료: /var/www/html 상태:' &&
+          ls -al /var/www/html/"
 
 options:
   logging: CLOUD_LOGGING_ONLY

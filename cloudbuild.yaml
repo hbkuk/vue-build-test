@@ -15,14 +15,14 @@ steps:
     args:
       - '-c'
       - |
-        echo "📦 복사: 첫 번째 VM으로 dist/ 전송 시작"
-        gcloud compute scp --recurse dist/ instance-group-2-06h1:/tmp/dist --zone=asia-northeast3-a
+        echo "📦 복사: 첫 번째 VM으로 dist/* 전송 시작"
+        gcloud compute scp --recurse dist/* instance-group-2-06h1:/tmp/dist/ --zone=asia-northeast3-a
 
         echo "🚀 복사 완료. 첫 번째 VM에서 /tmp/dist 내용 확인:"
-        gcloud compute ssh instance-group-2-06h1 --zone=asia-northeast3-a --command="ls -al /tmp/dist"
+        gcloud compute ssh instance-group-2-06h1 --zone=asia-northeast3-a --quiet --command="ls -al /tmp/dist"
 
         echo "🛠️ nginx 디렉토리 덮어쓰기 진행 중..."
-        gcloud compute ssh instance-group-2-06h1 --zone=asia-northeast3-a --command="
+        gcloud compute ssh instance-group-2-06h1 --zone=asia-northeast3-a --quiet --command="
           sudo rm -rf /var/www/html/* &&
           sudo cp -r /tmp/dist/* /var/www/html/ &&
           echo '✅ 첫 번째 VM에 복사 완료: /var/www/html 상태:' &&
@@ -34,14 +34,14 @@ steps:
     args:
       - '-c'
       - |
-        echo "📦 복사: 두 번째 VM으로 dist/ 전송 시작"
-        gcloud compute scp --recurse dist/ instance-group-2-9mdh:/tmp/dist --zone=asia-northeast3-a
+        echo "📦 복사: 두 번째 VM으로 dist/* 전송 시작"
+        gcloud compute scp --recurse dist/* instance-group-2-9mdh:/tmp/dist/ --zone=asia-northeast3-a
 
         echo "🚀 복사 완료. 두 번째 VM에서 /tmp/dist 내용 확인:"
-        gcloud compute ssh instance-group-2-9mdh --zone=asia-northeast3-a --command="ls -al /tmp/dist"
+        gcloud compute ssh instance-group-2-9mdh --zone=asia-northeast3-a --quiet --command="ls -al /tmp/dist"
 
         echo "🛠️ nginx 디렉토리 덮어쓰기 진행 중..."
-        gcloud compute ssh instance-group-2-9mdh --zone=asia-northeast3-a --command="
+        gcloud compute ssh instance-group-2-9mdh --zone=asia-northeast3-a --quiet --command="
           sudo rm -rf /var/www/html/* &&
           sudo cp -r /tmp/dist/* /var/www/html/ &&
           echo '✅ 두 번째 VM에 복사 완료: /var/www/html 상태:' &&

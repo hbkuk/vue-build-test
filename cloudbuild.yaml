@@ -1,0 +1,24 @@
+steps:
+  # 1. 의존성 설치
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['ci']
+
+  # 2. Vite 빌드
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['run', 'build']
+
+  # 3. 빌드 결과를 VM으로 복사
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # dist 폴더 전체 복사
+        gcloud compute scp --recurse dist/ instance-group-2-06h1:/tmp/dist --zone=asia-northeast3-a
+
+        # VM 내에서 nginx 경로로 복사
+        gcloud compute ssh instance-group-2-06h1 --zone=asia-northeast3-a --command="
+          sudo rm -rf /var/www/html/* &&
+          sudo cp -r /tmp/dist/* /var/www/html/"

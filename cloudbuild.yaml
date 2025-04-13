@@ -22,3 +22,6 @@ steps:
         gcloud compute ssh instance-group-2-06h1 --zone=asia-northeast3-a --command="
           sudo rm -rf /var/www/html/* &&
           sudo cp -r /tmp/dist/* /var/www/html/"
+
+options:
+  logging: CLOUD_LOGGING_ONLY

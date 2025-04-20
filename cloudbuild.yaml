@@ -14,3 +14,6 @@ steps:
       - |
         tar -czf dist.tar.gz -C dist .
         gsutil cp dist.tar.gz gs://vue-pension-builder-bucket/dist/dist.tar.gz
+
+options:
+  logging: CLOUD_LOGGING_ONLY

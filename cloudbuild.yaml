@@ -25,8 +25,6 @@ steps:
     image: 'gcr.io/cloud-builders/docker'
     args: [ 'push', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest' ]
 
-images: [ 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest' ]
-
 options:
   logging: CLOUD_LOGGING_ONLY
 timeout: 900s

@@ -1,19 +1,45 @@
 steps:
+  # 1. 의존성 설치
   - name: 'node:18'
     entrypoint: 'npm'
     args: ['ci']
 
+  # 2. 빌드
   - name: 'node:18'
     entrypoint: 'npm'
     args: ['run', 'build']
 
+  # 3. 압축, GCS 업로드, startup.sh 업로드, 템플릿 생성, MIG 업데이트
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
+        echo "📦 dist.tar.gz 생성"
         tar -czf dist.tar.gz -C dist .
+
+        echo "☁️ dist.tar.gz 업로드"
         gsutil cp dist.tar.gz gs://vue-pension-builder-bucket/dist/dist.tar.gz
 
-options:
-  logging: CLOUD_LOGGING_ONLY
+        echo "📁 startup.sh 업로드"
+        gsutil cp startup.sh gs://vue-pension-builder-bucket/scripts/startup.sh
+
+        echo "🧱 인스턴스 템플릿 생성"
+        TIMESTAMP=$(date +%s)
+        TEMPLATE_NAME=vue-template-$TIMESTAMP
+
+        gcloud compute instance-templates create $TEMPLATE_NAME \
+          --machine-type=e2-micro \
+          --image-family=debian-11 \
+          --image-project=debian-cloud \
+          --metadata=startup-script-url=gs://vue-pension-builder-bucket/scripts/startup.sh \
+          --service-account=vue-vm-sa@affable-heading-456202-r3.iam.gserviceaccount.com \
+          --scopes=https://www.googleapis.com/auth/cloud-platform \
+          --tags=http-server
+
+        echo "🔁 MIG 롤링 업데이트"
+        gcloud compute instance-groups managed rolling-action start-update instance-group-3 \
+          --version=template=$TEMPLATE_NAME \
+          --zone=asia-northeast3-a
+
+timeout: 900s

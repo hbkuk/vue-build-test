@@ -20,7 +20,7 @@ onMounted(async () => {
     <h1>🏠 Home Page</h1>
     <router-link to="/about">Go to About</router-link>
 
-    <h2 style="margin-top: 2rem;">📋 할 일 목록</h2>
+    <h2 style="margin-top: 2rem;">📋 할 일 목록!!!!!</h2>
     <ul>
       <li v-for="todo in todos" :key="todo.id">
         {{ todo.todo }} - 완료: {{ todo.completed ? 'O' : 'X' }}

@@ -42,4 +42,7 @@ steps:
           --version=template=$TEMPLATE_NAME \
           --zone=asia-northeast3-a
 
+
+options:
+  logging: CLOUD_LOGGING_ONLY
 timeout: 900s

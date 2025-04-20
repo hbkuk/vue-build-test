@@ -36,6 +36,7 @@ steps:
           --service-account=vue-vm-sa@affable-heading-456202-r3.iam.gserviceaccount.com \
           --scopes=https://www.googleapis.com/auth/cloud-platform \
           --tags=http-server
+          --no-address
 
         echo "🔁 MIG 롤링 업데이트"
         gcloud compute instance-groups managed rolling-action start-update instance-group-3 \

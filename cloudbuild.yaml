@@ -15,31 +15,29 @@ steps:
     args:
       - '-c'
       - |
+        TIMESTAMP=$$(date +%s)
+        TEMPLATE_NAME=vue-template-$$TIMESTAMP
+        
         echo "📦 dist.tar.gz 생성"
         tar -czf dist.tar.gz -C dist .
-
-        echo "☁️ dist.tar.gz 업로드"
+        
+        echo "☁️ GCS 업로드"
         gsutil cp dist.tar.gz gs://vue-pension-builder-bucket/dist/dist.tar.gz
-
-        echo "📁 startup.sh 업로드"
         gsutil cp startup.sh gs://vue-pension-builder-bucket/scripts/startup.sh
-
-        echo "🧱 인스턴스 템플릿 생성"
-        TIMESTAMP=$(date +%s)
-        TEMPLATE_NAME=vue-template-$TIMESTAMP
-
-        gcloud compute instance-templates create $TEMPLATE_NAME \
+        
+        echo "🧱 인스턴스 템플릿 생성: $$TEMPLATE_NAME"
+        gcloud compute instance-templates create $$TEMPLATE_NAME \
           --machine-type=e2-micro \
           --image-family=debian-11 \
           --image-project=debian-cloud \
           --metadata=startup-script-url=gs://vue-pension-builder-bucket/scripts/startup.sh \
-          --service-account=vue-vm-sa@affable-heading-456202-r3.iam.gserviceaccount.com \
+          --service-account=vue-vm-sa@PROJECT_ID.iam.gserviceaccount.com \
           --scopes=https://www.googleapis.com/auth/cloud-platform \
           --tags=http-server
-
+        
         echo "🔁 MIG 롤링 업데이트"
-        gcloud compute instance-groups managed rolling-action start-update instance-group-3 \
-          --version=template=$TEMPLATE_NAME \
+        gcloud compute instance-groups managed rolling-action start-update vue-mig-group \
+          --version=template=$$TEMPLATE_NAME \
           --zone=asia-northeast3-a
 
 

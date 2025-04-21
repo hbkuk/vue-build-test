@@ -40,10 +40,10 @@ steps:
     args:
       - -c
       - |
+        echo "🔁 MIG 무중단 롤링 재시작 시작"
         gcloud compute instance-groups managed rolling-action restart instance-group-4 \
           --zone=asia-northeast3-a \
-          --max-unavailable=0 \
-          --min-ready=30s
+          --max-unavailable=1
 
 timeout: 900s
 options:

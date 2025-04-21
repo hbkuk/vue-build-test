@@ -1,30 +1,44 @@
+# 1. npm install        → node_modules
+# 2. npm run build      → dist 생성
+# 3. docker build       → dist 포함된 nginx 이미지 생성
+# 4. docker push        → 커밋 해시 기반 이미지 푸시
+# 5. tag latest & push  → 최신 버전도 유지
+
 steps:
-  # Node.js 환경에서 Vue.js 앱 빌드
+  # 1. Vue 설치
   - name: 'node:lts'
-    entrypoint: 'npm'
-    args: ['install']
+    args:
+      - install
+    entrypoint: npm
+
+  # 2. 빌드
   - name: 'node:lts'
-    entrypoint: 'npm'
-    args: ['run', 'build']
+    args:
+      - run
+      - build
+    entrypoint: npm
 
-  # Docker 이미지 빌드
-  - name: 'docker:latest'
-    image: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA', '.']
+  # 3. Docker 빌드
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '-t'
+      - 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA'
+      - .
 
-  # Docker 이미지 Container Registry에 푸시
-  - name: 'docker:latest'
-    image: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA']
+  # 4. 커밋 해시 버전 이미지 푸시
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA'
 
-  # latest 태그 추가 (선택 사항)
-  - name: 'docker:latest'
-    image: 'gcr.io/cloud-builders/docker'
-    args: [ 'tag', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest' ]
-  - name: 'docker:latest'
-    image: 'gcr.io/cloud-builders/docker'
-    args: [ 'push', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest' ]
+  # 5. latest 태그로 이미지 추가
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest']
 
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest']'
+
+timeout: 900s
 options:
   logging: CLOUD_LOGGING_ONLY
-timeout: 900s

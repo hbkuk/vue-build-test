@@ -1,12 +1,17 @@
-  # Nginx 공식 이미지 사용
-  FROM nginx:stable-alpine
+# 1단계: Vue 앱 빌드
+FROM node:lts as build
+WORKDIR /app
+COPY . .
+RUN npm install && npm run build
 
-  # Vue.js 빌드 결과물 복사
-  COPY --from=node:lts /app/dist /usr/share/nginx/html
+# 2단계: Nginx에 정적 파일 복사
+FROM nginx:stable-alpine
 
-  # 사용자 정의 Nginx 설정 파일 복사 (필요한 경우)
-  COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+# 커스텀 nginx.conf 복사 (루트 기준)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-  # Nginx 실행
-  EXPOSE 80
-  CMD ["nginx", "-g", "daemon off;"]
+# dist 결과물을 nginx 루트에 배포
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# (선택) Healthcheck 지원
+HEALTHCHECK --interval=30s --timeout=5s CMD curl -f http://localhost/healthz || exit 1

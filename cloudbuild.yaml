@@ -37,7 +37,7 @@ steps:
     args: ['tag', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest']'
+    args: ['push', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest']
 
 timeout: 900s
 options:

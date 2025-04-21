@@ -19,25 +19,19 @@ steps:
     entrypoint: npm
 
   # 3. Docker 빌드
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - build
-      - '-t'
-      - 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA'
-      - .
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'asia-northeast3-docker.pkg.dev/affable-heading-456202-r3/vm-docker/vue-nginx:$SHORT_SHA', '.']
 
   # 4. 커밋 해시 버전 이미지 푸시
-  - name: gcr.io/cloud-builders/docker
-    args:
-      - push
-      - 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA'
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'asia-northeast3-docker.pkg.dev/affable-heading-456202-r3/vm-docker/vue-nginx:$SHORT_SHA']
 
   # 5. latest 태그로 이미지 추가
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['tag', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:$SHORT_SHA', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest']
+    args: ['tag', 'asia-northeast3-docker.pkg.dev/affable-heading-456202-r3/vm-docker/vue-nginx:$SHORT_SHA', 'asia-northeast3-docker.pkg.dev/affable-heading-456202-r3/vm-docker/vue-nginx:latest']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'asia.gcr.io/affable-heading-456202-r3/vue-nginx:latest']
+    args: ['push', 'asia-northeast3-docker.pkg.dev/affable-heading-456202-r3/vm-docker/vue-nginx:latest']
 
 timeout: 900s
 options:

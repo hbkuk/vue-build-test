@@ -8,7 +8,7 @@ const todos = ref<any[]>([])
 onMounted(async () => {
   try {
     const res = await axios.get('https://dummyjson.com/todos')
-    todos.value = res.data.todos.slice(0, 10) // 상위 5개만 표시
+    todos.value = res.data.todos.slice(0, 100) // 상위 5개만 표시
   } catch (err) {
     console.error('🔥 API 요청 실패:', err)
   }

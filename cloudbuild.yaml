@@ -33,6 +33,18 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'asia-northeast3-docker.pkg.dev/affable-heading-456202-r3/vm-docker/vue-nginx:latest']
 
+
+  # 6. MIG 무중단 재시작 (최신 이미지 반영용)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - -c
+      - |
+        gcloud compute instance-groups managed rolling-action restart instance-group-4 \
+          --zone=asia-northeast3-a \
+          --max-unavailable=0 \
+          --min-ready=30s
+
 timeout: 900s
 options:
   logging: CLOUD_LOGGING_ONLY

@@ -27,5 +27,17 @@ steps:
       - push
       - '${_DOCKER_IMAGE_URL}:$SHORT_SHA'
 
+  # 5. latest 태그로 이미지 추가
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - tag
+      - '${_DOCKER_IMAGE_URL}:$SHORT_SHA'
+      - '${_DOCKER_IMAGE_URL}:latest'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - '${_DOCKER_IMAGE_URL}:latest'
+
 options:
   logging: CLOUD_LOGGING_ONLY

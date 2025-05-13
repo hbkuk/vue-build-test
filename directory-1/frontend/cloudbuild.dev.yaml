@@ -1,15 +1,5 @@
 steps:
-  - name: 'node:lts'
-    dir: 'directory-1/frontend'
-    args: ['install']
-    entrypoint: npm
-
-  - name: 'node:lts'
-    dir: 'directory-1/frontend'
-    args: ['run', 'build:${_BUILD_ENV}']
-    entrypoint: npm
-
-  # 3. Docker Build
+  # 1. Docker Build
   - name: 'gcr.io/cloud-builders/docker'
     dir: 'directory-1/frontend'
     args:
@@ -21,13 +11,13 @@ steps:
       - 'BUILD_ENV=${_BUILD_ENV}'
       - '.'
 
-  # 4. 커밋 해시 버전 이미지 푸시
+  # 2. 커밋 해시 버전 이미지 푸시
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - push
       - '${_DOCKER_IMAGE_URL}:$SHORT_SHA'
 
-  # 5. latest 태그로 이미지 추가
+  # 3. latest 태그로 이미지 추가
   - name: 'gcr.io/cloud-builders/docker'
     args:
       - tag
@@ -39,7 +29,7 @@ steps:
       - push
       - '${_DOCKER_IMAGE_URL}:latest'
 
-  # 6. MIG 무중단 재시작 (최신 Docker 이미지 반영용)
+  # 4. MIG 무중단 재시작 (최신 Docker 이미지 반영용)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:

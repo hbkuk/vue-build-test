@@ -18,8 +18,13 @@ steps:
       - '-t'
       - '${_DOCKER_IMAGE_URL}:$SHORT_SHA'
       - '--build-arg'
-      - 'BUILD_ENV=${_BUILD_ENV}'
       - '.'
+
+  # 4. 커밋 해시 버전 이미지 푸시
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - push
+      - '${_DOCKER_IMAGE_URL}:$SHORT_SHA'
 
 options:
   logging: CLOUD_LOGGING_ONLY

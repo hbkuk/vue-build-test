@@ -1,0 +1,32 @@
+steps:
+  - name: 'node:lts'
+    dir: 'stayhome/frontend'
+    args: ['install']
+    entrypoint: npm
+
+  - name: 'node:lts'
+    dir: 'stayhome/frontend'
+    args: ['run', 'build:${_BUILD_ENV}']
+    entrypoint: npm
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud compute scp --recurse stayhome/frontend/dist/* hbkuk@dev-homepage-instance-20250508-014610:/tmp/dist \
+          --zone=asia-northeast3-c
+        
+        gcloud compute ssh hbkuk@dev-homepage-instance-20250508-014610 --zone=asia-northeast3-c --command="
+            echo '[VM] 기존 HTML 정적 파일 삭제 중...'
+            sudo rm -rf /usr/share/nginx/html/*
+
+            echo '[VM] 새 파일 복사 중...'
+            sudo cp -r /tmp/dist/* /usr/share/nginx/html/
+
+            echo '[VM] Nginx 재시작...'
+            sudo systemctl reload nginx
+        "
+
+options:
+  logging: CLOUD_LOGGING_ONLY

@@ -1,0 +1,50 @@
+steps:
+
+  # 1. Node 설치 (ci 권장)
+  - name: 'node:lts'
+    dir: 'stayhome/frontend'
+    args: ['ci']
+    entrypoint: npm
+
+  # 2. Code 빌드
+  - name: 'node:lts'
+    dir: 'stayhome/frontend'
+    args: ['run', 'build:${_BUILD_ENV}']
+    entrypoint: npm
+
+  # 3. Docker Build
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: 'stayhome/frontend'
+    args:
+      - build
+      - '--no-cache'
+      - '-t'
+      - '${_DOCKER_IMAGE_URL}:$SHORT_SHA'
+      - '--build-arg'
+      - 'BUILD_ENV=${_BUILD_ENV}'
+      - '.'
+
+  # 4. Docker Image 커밋 해시 버전 Docker Image 푸쉬
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_DOCKER_IMAGE_URL}:$SHORT_SHA']
+
+  # 5. Docker Image에 latest 태그 추가
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['tag', '${_DOCKER_IMAGE_URL}:$SHORT_SHA', '${_DOCKER_IMAGE_URL}:latest']
+
+  # 6. Docker Image latest 태그로 이미지 추가
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_DOCKER_IMAGE_URL}:latest']
+
+  # 7. MIG 무중단 재시작 (최신 Docker 이미지 반영)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - -c
+      - |
+        gcloud compute instance-groups managed rolling-action restart ${INSTANCE_GROUP_NAME} \
+          --zone=asia-northeast3-a \
+          --max-unavailable=1
+
+options:
+  logging: CLOUD_LOGGING_ONLY

@@ -39,5 +39,15 @@ steps:
       - push
       - '${_DOCKER_IMAGE_URL}:latest'
 
+  # 6. MIG 무중단 재시작 (최신 Docker 이미지 반영용)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - -c
+      - |
+        gcloud compute instance-groups managed rolling-action restart ${_MIG_NAME} \
+          --zone=${_MIG_ZONE} \
+          --max-unavailable=1
+
 options:
   logging: CLOUD_LOGGING_ONLY

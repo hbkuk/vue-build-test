@@ -10,7 +10,8 @@ RUN npm install
 
 # 전체 소스 복사 후 빌드
 COPY . .
-RUN npm run build
+ARG BUILD_ENV=dev
+RUN npm run build:$BUILD_ENV
 
 # 2단계: NGINX 이미지에 정적 파일 올리기
 FROM nginx:stable-alpine AS production-stage

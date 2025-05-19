@@ -42,9 +42,11 @@ steps:
     args:
       - -c
       - |
-        gcloud compute instance-groups managed rolling-action restart ${INSTANCE_GROUP_NAME} \
+        gcloud compute instance-groups managed rolling-action start-update ${INSTANCE_GROUP_NAME} \
+          --version=template=${INSTANCE_TEMPLATE_NAME} \
           --zone=asia-northeast3-a \
-          --max-unavailable=1
+          --max-unavailable=0 \
+          --min-surge=1
 
 options:
   logging: CLOUD_LOGGING_ONLY

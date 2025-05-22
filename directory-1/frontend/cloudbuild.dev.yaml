@@ -37,7 +37,8 @@ steps:
       - |
         gcloud compute instance-groups managed rolling-action restart ${_MIG_NAME} \
           --zone=${_MIG_ZONE} \
-          --max-unavailable=1
+          --max-unavailable=0 \
+          --min-surge=1
 
 options:
   logging: CLOUD_LOGGING_ONLY

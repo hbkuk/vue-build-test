@@ -45,7 +45,6 @@ steps:
         gcloud compute instance-groups managed rolling-action start-update ${INSTANCE_GROUP_NAME} \
           --version=template=${INSTANCE_TEMPLATE_NAME} \
           --zone=asia-northeast3-a \
-          --min-ready=3m \
           --max-unavailable=0 \
           --min-surge=1
 

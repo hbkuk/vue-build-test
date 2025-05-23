@@ -41,6 +41,7 @@ steps:
           --max-unavailable=0 \
           --max-surge=1 \
           --minimal-action=replace
+          --region=${_MIG_ZONE}
 
 options:
   logging: CLOUD_LOGGING_ONLY
